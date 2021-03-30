@@ -1,17 +1,18 @@
 package com.olrep.gitpulls.ui.main
 
+import android.app.SearchManager
+import android.content.Context
 import androidx.lifecycle.ViewModelProvider
 import android.os.Bundle
 import android.util.Log
+import android.view.*
 import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
 import android.widget.ProgressBar
 import android.widget.Toast
-import androidx.lifecycle.Observer
+import androidx.appcompat.widget.SearchView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.RecyclerView.SCROLL_STATE_IDLE
 import com.olrep.gitpulls.R
 import com.olrep.gitpulls.utils.Utils
 
@@ -23,11 +24,13 @@ class MainFragment : Fragment() {
 
     private lateinit var viewModel: MainViewModel
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         return inflater.inflate(R.layout.main_fragment, container, false)
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setHasOptionsMenu(true)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -42,12 +45,20 @@ class MainFragment : Fragment() {
         rv.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
                 super.onScrollStateChanged(recyclerView, newState)
+
                 val totalItems = rv.layoutManager!!.itemCount
                 val lastVisibleItemPosition = llm.findLastVisibleItemPosition()
-                if (totalItems == lastVisibleItemPosition + 1) {
 
+                if (newState == SCROLL_STATE_IDLE) {
+                    Log.d(TAG, "Scrolling stopped, lastVisibleItemPosition is $lastVisibleItemPosition, totalItems are $totalItems")
+
+                    if (totalItems == lastVisibleItemPosition + 1 && Utils.shouldLoadMore(totalItems, viewModel.totalCount)) {
+                        Log.d(TAG, "reached end of the line - load more")
+                        viewModel.username.value?.let { viewModel.getPulls(it) }
+                    } else {
+                        Log.i(TAG, "Can't or shouldn't load more")
+                    }
                 }
-
             }
         })
 
@@ -76,6 +87,31 @@ class MainFragment : Fragment() {
             adapter.clear()
         })
 
-        viewModel.getPulls("defunkt", 15, 1)
+        viewModel.getPulls("aderyabin") // this is the first load calls when there's no user entered
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        inflater.inflate(R.menu.menu, menu)
+        val searchMenuItem: MenuItem? = menu.findItem(R.id.menu_item_search)
+        val searchView: SearchView = searchMenuItem?.actionView as SearchView
+        searchView.isIconified = true
+
+        val searchManager: SearchManager = activity?.getSystemService(Context.SEARCH_SERVICE) as SearchManager
+        searchView.setSearchableInfo(searchManager.getSearchableInfo(activity!!.componentName))
+
+        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                Log.i(TAG, "onQueryTextSubmit: $query")
+                query?.let { viewModel.getPulls(it) }
+                return true
+            }
+
+            override fun onQueryTextChange(query: String?): Boolean {
+                Log.d(TAG, "onQueryTextChange: $query")
+                return true
+            }
+        })
+
+        super.onCreateOptionsMenu(menu, inflater);
     }
 }

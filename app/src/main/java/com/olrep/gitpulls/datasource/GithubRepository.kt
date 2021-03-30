@@ -14,10 +14,10 @@ object GithubRepository {
     private var api: GithubApi = GithubClient().getInstance().create(GithubApi::class.java)
     private const val TAG = Utils.TAG + "GR"
 
-    fun getClosedPulls(author: String, perPage: Int, page: Int, callback: OnResponse<Items>) {
-        val searchQuery = "is:pr+author:$author+state:closed"
+    fun getClosedPulls(user: String, page: Int, callback: OnResponse<Items>) {
+        val searchQuery = "is:pr+user:$user+state:closed"
 
-        val apiCall: Call<Items> = api.getClosedPulls(searchQuery, page, perPage)
+        val apiCall: Call<Items> = api.getClosedPulls(searchQuery, page, Utils.ITEMS_PER_PAGE)
         apiCall.enqueue(object : Callback<Items> {
             override fun onResponse(call: Call<Items>, response: Response<Items>) {
                 Log.d(TAG, "onResponse: $response")

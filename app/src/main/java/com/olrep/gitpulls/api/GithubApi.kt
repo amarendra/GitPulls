@@ -6,7 +6,7 @@ import retrofit2.http.GET
 import retrofit2.http.Query
 
 interface GithubApi {
-    @GET("issues")
+    @GET("search/issues")
     fun getClosedPulls(
         @Query("q", encoded = true) searchQuery: String,
         @Query("page") page: Int,

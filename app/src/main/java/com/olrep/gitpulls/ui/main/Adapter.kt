@@ -1,5 +1,6 @@
 package com.olrep.gitpulls.ui.main
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -8,24 +9,28 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.olrep.gitpulls.R
 import com.olrep.gitpulls.model.Item
+import com.olrep.gitpulls.utils.Utils
 import com.squareup.picasso.Picasso
 
 class Adapter : RecyclerView.Adapter<Adapter.ViewHolder>() {
+    private val TAG = Utils.TAG + "Ad"
     private val list = ArrayList<Item>()
 
     fun setData(items: List<Item>) {
         val prevSize = itemCount
+        Log.d(TAG, "setData called. prevSize is $prevSize")
         list.addAll(items)
 
         if (items.isNotEmpty()) {
+            Log.d(TAG, "Calling item range changed from $prevSize for items ${items.size}")
             notifyItemRangeInserted(prevSize, items.size)
         }
     }
 
     fun clear() {
-        val prevSize = itemCount
+        Log.d(TAG, "Clear called")
         list.clear()
-        notifyItemRangeRemoved(0, prevSize)
+        notifyDataSetChanged()
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
