@@ -1,0 +1,1 @@
+Demo/practise app: mvvm, picasso, retrofit, recyclerview, pagination, kotlin etc
