@@ -2,6 +2,7 @@ package com.olrep.gitpulls.ui.main
 
 import android.app.SearchManager
 import android.content.Context
+import android.content.Intent
 import androidx.lifecycle.ViewModelProvider
 import android.os.Bundle
 import android.util.Log
@@ -13,10 +14,14 @@ import androidx.appcompat.widget.SearchView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.SCROLL_STATE_IDLE
+import com.google.android.material.snackbar.Snackbar
 import com.olrep.gitpulls.R
+import com.olrep.gitpulls.callback.ClickListener
+import com.olrep.gitpulls.model.Item
+import com.olrep.gitpulls.ui.web.WebActivity
 import com.olrep.gitpulls.utils.Utils
 
-class MainFragment : Fragment() {
+class MainFragment : Fragment(), ClickListener {
     companion object {
         private const val TAG = Utils.TAG + "MF"
         fun newInstance() = MainFragment()
@@ -62,7 +67,7 @@ class MainFragment : Fragment() {
             }
         })
 
-        val adapter = Adapter()
+        val adapter = Adapter(this)
         rv.adapter = adapter
 
         val progressBar: ProgressBar = view.findViewById(R.id.progress_circular)
@@ -88,6 +93,12 @@ class MainFragment : Fragment() {
         })
 
         viewModel.getPulls("aderyabin") // this is the first load calls when there's no user entered
+
+        Snackbar.make(
+            view,
+            "Trying to load user aderyabin's pull requests on app launch",
+            Snackbar.LENGTH_LONG
+        ).show()
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -112,6 +123,13 @@ class MainFragment : Fragment() {
             }
         })
 
-        super.onCreateOptionsMenu(menu, inflater);
+        super.onCreateOptionsMenu(menu, inflater)
+    }
+
+    override fun clicked(url: String, title: String) {
+        val intent = Intent(activity, WebActivity::class.java)
+        intent.putExtra(Utils.KEY_PR_URL, url)
+        intent.putExtra(Utils.KEY_PR_TITLE, title)
+        startActivity(intent)
     }
 }

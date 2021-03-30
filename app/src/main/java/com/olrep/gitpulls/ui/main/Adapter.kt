@@ -1,9 +1,8 @@
 package com.olrep.gitpulls.ui.main
 
-import android.graphics.Color
+import android.graphics.Paint
 import android.text.SpannableString
 import android.text.Spanned
-import android.text.TextPaint
 import android.text.method.LinkMovementMethod
 import android.text.style.ClickableSpan
 import android.util.Log
@@ -14,12 +13,13 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.olrep.gitpulls.R
+import com.olrep.gitpulls.callback.ClickListener
 import com.olrep.gitpulls.model.Item
 import com.olrep.gitpulls.utils.RoundedCorner
 import com.olrep.gitpulls.utils.Utils
 import com.squareup.picasso.Picasso
 
-class Adapter : RecyclerView.Adapter<Adapter.ViewHolder>() {
+class Adapter(private val clickListener: ClickListener) : RecyclerView.Adapter<Adapter.ViewHolder>() {
     private val TAG = Utils.TAG + "Ad"
     private val list = ArrayList<Item>()
 
@@ -57,28 +57,34 @@ class Adapter : RecyclerView.Adapter<Adapter.ViewHolder>() {
 
         Picasso.get().load(item.user.avatar_url).transform(roundedCorner).into(holder.avatar)
 
-        holder.user.text = holder.itemView.context.getString(R.string.user_placeholder, "@", item.user.login)
+        holder.user.text = holder.itemView.context.getString(
+            R.string.user_placeholder,
+            "@",
+            item.user.login
+        )
+        holder.user.paintFlags = holder.user.paintFlags or Paint.UNDERLINE_TEXT_FLAG
+
+        holder.user.setOnClickListener { clickListener.clicked(item.user.html_url, item.user.login) }
+
         holder.createdAt.text = Utils.getTimeWLabel(item.created_at, true)
         holder.closedAt.text = Utils.getTimeWLabel(item.closed_at, false)
 
-        val spannableString: SpannableString = SpannableString("#" + item.number + " " + item.title)
+        val spannableString = SpannableString("#" + item.number + " " + item.title)
         val clickableSpan = object : ClickableSpan() {
             override fun onClick(widget: View) {
                 Log.d(TAG, "cs clicked")
-            }
-
-            override fun updateDrawState(ds: TextPaint) {
-                super.updateDrawState(ds)
-                ds.isUnderlineText = true;
+                clickListener.clicked(item.html_url, item.title)
             }
         }
-
-        spannableString.setSpan(clickableSpan, 0, ((item.number.toString()).length + 1), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-
+        spannableString.setSpan(
+            clickableSpan,
+            0,
+            ((item.number.toString()).length + 1),
+            Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
+        )
 
         holder.title.text = spannableString
         holder.title.movementMethod = LinkMovementMethod.getInstance()
-//        holder.title.highlightColor = Color.DKGRAY;
     }
 
     override fun getItemCount(): Int {

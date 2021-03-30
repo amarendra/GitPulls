@@ -8,6 +8,9 @@ object Utils {
     const val TAG = "GitPulls_"
     const val ITEMS_PER_PAGE = 15   // just a globally configurable value
 
+    const val KEY_PR_URL = "pr_url"
+    const val KEY_PR_TITLE = "pr_title"
+
     fun shouldLoadMore(localSize: Int, remoteSize: Int): Boolean {
         return localSize < remoteSize
     }

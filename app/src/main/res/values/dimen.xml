@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <dimen name="card_padding">8dp</dimen>
+    <dimen name="card_padding">4dp</dimen>
     <dimen name="card_corner_rad">8dp</dimen>
     <dimen name="margin_outer">8dp</dimen>
     <dimen name="margin_outer_bottom">10dp</dimen>
