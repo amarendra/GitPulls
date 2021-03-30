@@ -31,7 +31,7 @@ object Utils {
     }
 
     fun getRepo(url: String): String {
-        val firstIndex = "https://github.com/".length + 1
+        val firstIndex = "https://github.com/".length
         val lastIndex = url.indexOf("/pull/")
         return url.substring(firstIndex, lastIndex)
     }
