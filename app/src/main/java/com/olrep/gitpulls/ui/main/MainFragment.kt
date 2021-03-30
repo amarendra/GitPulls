@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModelProvider
 import android.os.Bundle
 import android.util.Log
 import android.view.*
+import android.view.inputmethod.InputMethodManager
 import androidx.fragment.app.Fragment
 import android.widget.ProgressBar
 import android.widget.Toast
@@ -17,7 +18,6 @@ import androidx.recyclerview.widget.RecyclerView.SCROLL_STATE_IDLE
 import com.google.android.material.snackbar.Snackbar
 import com.olrep.gitpulls.R
 import com.olrep.gitpulls.callback.ClickListener
-import com.olrep.gitpulls.model.Item
 import com.olrep.gitpulls.ui.web.WebActivity
 import com.olrep.gitpulls.utils.Utils
 
@@ -92,13 +92,11 @@ class MainFragment : Fragment(), ClickListener {
             adapter.clear()
         })
 
-        viewModel.getPulls("aderyabin") // this is the first load calls when there's no user entered
+        val defaultUser = "defunkt"
 
-        Snackbar.make(
-            view,
-            "Trying to load user aderyabin's pull requests on app launch",
-            Snackbar.LENGTH_LONG
-        ).show()
+        viewModel.getPulls(defaultUser) // this is the first load calls when there's no user entered
+
+        Snackbar.make(view, "Loading user $defaultUser's pull requests on app launch", Snackbar.LENGTH_LONG).show()
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -114,6 +112,7 @@ class MainFragment : Fragment(), ClickListener {
             override fun onQueryTextSubmit(query: String?): Boolean {
                 Log.i(TAG, "onQueryTextSubmit: $query")
                 query?.let { viewModel.getPulls(it) }
+                hideSoftKeyboard()
                 return true
             }
 
@@ -124,6 +123,15 @@ class MainFragment : Fragment(), ClickListener {
         })
 
         super.onCreateOptionsMenu(menu, inflater)
+    }
+
+    fun hideSoftKeyboard() {
+        if (activity?.currentFocus == null){
+            return
+        }
+
+        val inputMethodManager = activity?.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        inputMethodManager.hideSoftInputFromWindow(activity?.currentFocus?.windowToken, 0)
     }
 
     override fun clicked(url: String, title: String) {
