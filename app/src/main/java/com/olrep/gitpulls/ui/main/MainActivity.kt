@@ -1,8 +1,8 @@
-package com.olrep.gitpulls
+package com.olrep.gitpulls.ui.main
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import com.olrep.gitpulls.ui.main.MainFragment
+import com.olrep.gitpulls.R
 
 
 class MainActivity : AppCompatActivity() {

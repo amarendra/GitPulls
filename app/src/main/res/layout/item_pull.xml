@@ -4,59 +4,89 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginStart="8dp"
-    android:layout_marginTop="8dp"
-    android:layout_marginEnd="8dp"
-    app:cardCornerRadius="6dp">
+    android:layout_margin="@dimen/margin_outer"
+    android:layout_marginBottom="@dimen/margin_outer_bottom"
+    android:elevation="@dimen/card_padding"
+    app:cardCornerRadius="@dimen/card_corner_rad">
 
-    <RelativeLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/ll_detail"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:padding="@dimen/card_padding">
 
         <ImageView
             android:id="@+id/iv_author"
-            android:layout_width="60dp"
-            android:layout_height="60dp"
-            android:layout_alignParentStart="true"
-            android:layout_alignParentTop="true"
+            android:layout_width="70dp"
+            android:layout_height="70dp"
+            android:contentDescription="@string/avatar_desc"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
             tools:src="@tools:sample/avatars" />
 
         <TextView
-            android:id="@+id/tv_athour"
+            android:id="@+id/tv_user"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@id/iv_author"
+            android:layout_marginLeft="@dimen/margin"
+            android:layout_marginRight="@dimen/margin"
+            android:layout_marginBottom="10dp"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:textColor="@color/item_color_user"
+            android:textSize="@dimen/font_medium"
+            android:textStyle="bold"
+            app:layout_constraintLeft_toRightOf="@id/iv_author"
+            app:layout_constraintTop_toTopOf="@id/iv_author"
             tools:text="@tools:sample/first_names" />
+
+
+        <TextView
+            android:id="@+id/tv_created"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/margin"
+            android:layout_marginLeft="@dimen/margin"
+            android:layout_marginEnd="@dimen/margin"
+            android:layout_marginRight="@dimen/margin"
+            android:fontFamily="sans-serif-smallcaps"
+            android:paddingTop="@dimen/margin_xsmall"
+            android:textColor="@color/item_color_time"
+            android:textSize="@dimen/font_small"
+            app:layout_constraintLeft_toRightOf="@id/iv_author"
+            app:layout_constraintTop_toBottomOf="@id/tv_user"
+            tools:text="Created: July 2, 21" />
+
+        <TextView
+            android:id="@+id/tv_closed"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/margin"
+            android:layout_marginLeft="@dimen/margin"
+            android:layout_marginEnd="@dimen/margin"
+            android:layout_marginRight="@dimen/margin"
+            android:fontFamily="sans-serif-smallcaps"
+            android:paddingTop="@dimen/margin_xsmall"
+            android:textColor="@color/item_color_time"
+            android:textSize="@dimen/font_small"
+            app:layout_constraintLeft_toRightOf="@id/iv_author"
+            app:layout_constraintTop_toBottomOf="@id/tv_created"
+            tools:text="Closed: July 3, 21" />
 
         <TextView
             android:id="@+id/tv_title"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_toEndOf="@id/iv_author"
+            android:layout_marginTop="@dimen/margin_large"
+            android:ellipsize="end"
+            android:lineSpacingExtra="2dp"
             android:maxLines="2"
-            tools:text="PR to fix root view NPE and then it was fixed again" />
+            android:textColor="@color/item_color_desc"
+            android:textSize="@dimen/font_xmedium"
+            android:textColorLink="@color/link_dark_grey"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/iv_author"
+            tools:text="@string/pr_desc" />
 
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/tv_title"
-            android:layout_alignBottom="@id/iv_author"
-            android:layout_toEndOf="@id/iv_author">
-
-            <TextView
-                android:id="@+id/tv_created"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                tools:text="Created: July 2, 21" />
-
-            <TextView
-                android:id="@+id/tv_closed"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                tools:text="Closed: July 3, 21" />
-
-        </LinearLayout>
-
-    </RelativeLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.cardview.widget.CardView>

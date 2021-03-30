@@ -1,4 +1,8 @@
 <resources>
     <string name="app_name">Git Pulls</string>
-    <string name="action_search">Enter a Github user</string>
+    <string name="action_search">Search Github user</string>
+    <string name="avatar_desc">avatar</string>
+    <string name="at">\@</string>
+    <string name="user_placeholder">%1$s%2$s</string>
+    <string name="pr_desc">PR to fix root view NPE and then it was fixed again. PR to fix root view NPE and then it was fixed again. PR to fix root view NPE and then it was fixed again</string>
 </resources>
