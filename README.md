@@ -1,8 +1,6 @@
 <img src="scr_capture/scr1.png" width="200"/> <img src="scr_capture/scr2.png" width="200"/> 
 
-</br>
-
-<img src="scr_capture/scr_rec.gif" width="200"  style="max-width:100%;"/>
+<img src="scr_capture/scr_rec.gif" width="500"  style="max-width:100%;"/> 
 
 Demo/practise app: mvvm, picasso, retrofit, recyclerview, pagination, kotlin etc
 
