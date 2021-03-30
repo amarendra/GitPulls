@@ -4,7 +4,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="@dimen/margin_outer"
+    android:layout_marginStart="@dimen/margin_outer_bottom"
+    android:layout_marginTop="@dimen/margin_outer"
+    android:layout_marginEnd="@dimen/margin_outer_bottom"
     android:layout_marginBottom="@dimen/margin_outer_bottom"
     android:elevation="@dimen/card_padding"
     app:cardCornerRadius="@dimen/card_corner_rad">
@@ -17,8 +19,8 @@
 
         <ImageView
             android:id="@+id/iv_author"
-            android:layout_width="70dp"
-            android:layout_height="70dp"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
             android:contentDescription="@string/avatar_desc"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintTop_toTopOf="parent"
@@ -33,13 +35,12 @@
             android:layout_marginBottom="10dp"
             android:ellipsize="end"
             android:maxLines="1"
-            android:textColor="@color/item_color_user"
+            android:textColor="@color/purple_500"
             android:textSize="@dimen/font_medium"
             android:textStyle="bold"
             app:layout_constraintLeft_toRightOf="@id/iv_author"
             app:layout_constraintTop_toTopOf="@id/iv_author"
             tools:text="@tools:sample/first_names" />
-
 
         <TextView
             android:id="@+id/tv_created"
@@ -74,6 +75,22 @@
             tools:text="Closed: July 3, 21" />
 
         <TextView
+            android:id="@+id/tv_repo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/margin"
+            android:layout_marginRight="@dimen/margin"
+            android:layout_marginBottom="10dp"
+            android:ellipsize="end"
+            android:maxLines="2"
+            android:textColor="@color/item_color_user"
+            android:textSize="@dimen/font_xmedium"
+            android:textStyle="bold"
+            app:layout_constraintLeft_toRightOf="@id/iv_author"
+            app:layout_constraintTop_toBottomOf="@id/tv_closed"
+            tools:text="name/repo" />
+
+        <TextView
             android:id="@+id/tv_title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -82,8 +99,8 @@
             android:lineSpacingExtra="2dp"
             android:maxLines="2"
             android:textColor="@color/item_color_desc"
-            android:textSize="@dimen/font_xmedium"
             android:textColorLink="@color/link_dark_grey"
+            android:textSize="@dimen/font_xmedium"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintTop_toBottomOf="@id/iv_author"
             tools:text="@string/pr_desc" />

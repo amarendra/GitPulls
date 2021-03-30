@@ -1,8 +1,10 @@
 package com.olrep.gitpulls.ui.main
 
 import android.graphics.Paint
+import android.graphics.Typeface
 import android.text.SpannableString
 import android.text.Spanned
+import android.text.TextPaint
 import android.text.method.LinkMovementMethod
 import android.text.style.ClickableSpan
 import android.util.Log
@@ -63,17 +65,27 @@ class Adapter(private val clickListener: ClickListener) : RecyclerView.Adapter<A
             item.user.login
         )
         holder.user.paintFlags = holder.user.paintFlags or Paint.UNDERLINE_TEXT_FLAG
-
         holder.user.setOnClickListener { clickListener.clicked(item.user.html_url, item.user.login) }
 
         holder.createdAt.text = Utils.getTimeWLabel(item.created_at, true)
         holder.closedAt.text = Utils.getTimeWLabel(item.closed_at, false)
+
+        val repo = Utils.getRepo(item.html_url)
+        holder.repo.text = repo
+        holder.repo.setOnClickListener { clickListener.clicked(Utils.getRepoUrl(item.html_url), repo) }
+        holder.repo.paintFlags = holder.repo.paintFlags or Paint.UNDERLINE_TEXT_FLAG
+
 
         val spannableString = SpannableString("#" + item.number + " " + item.title)
         val clickableSpan = object : ClickableSpan() {
             override fun onClick(widget: View) {
                 Log.d(TAG, "cs clicked")
                 clickListener.clicked(item.html_url, item.title)
+            }
+
+            override fun updateDrawState(ds: TextPaint) {
+                super.updateDrawState(ds)
+                ds.typeface = Typeface.DEFAULT_BOLD
             }
         }
         spannableString.setSpan(
@@ -94,8 +106,9 @@ class Adapter(private val clickListener: ClickListener) : RecyclerView.Adapter<A
     class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val avatar: ImageView = itemView.findViewById(R.id.iv_author)
         val user: TextView = itemView.findViewById(R.id.tv_user)
-        val title: TextView = itemView.findViewById(R.id.tv_title)
         val createdAt: TextView = itemView.findViewById(R.id.tv_created)
         val closedAt: TextView = itemView.findViewById(R.id.tv_closed)
+        val repo: TextView = itemView.findViewById(R.id.tv_repo)
+        val title: TextView = itemView.findViewById(R.id.tv_title)
     }
 }

@@ -1,6 +1,5 @@
 package com.olrep.gitpulls.utils
 
-import android.text.format.DateUtils
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -28,6 +27,17 @@ object Utils {
             formattedDate = time
         }
 
-        return (if(isCreated) "Created " else "Closed ") + formattedDate
+        return (if (isCreated) "Created " else "Closed ") + formattedDate
+    }
+
+    fun getRepo(url: String): String {
+        val firstIndex = "https://github.com/".length + 1
+        val lastIndex = url.indexOf("/pull/")
+        return url.substring(firstIndex, lastIndex)
+    }
+
+    fun getRepoUrl(url: String): String {
+        val lastIndex = url.indexOf("/pull/")
+        return url.substring(0, lastIndex)
     }
 }

@@ -10,5 +10,5 @@
     <color name="item_color_user">@android:color/holo_green_dark</color>
     <color name="item_color_time">#5c5a5a</color>
     <color name="item_color_desc">@android:color/black</color>
-    <color name="link_dark_grey">#686464</color>
+    <color name="link_dark_grey">#656161</color>
 </resources>
