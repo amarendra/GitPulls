@@ -28,6 +28,10 @@ class MainFragment : Fragment(), ClickListener {
     }
 
     private lateinit var viewModel: MainViewModel
+    private lateinit var adapter: Adapter
+    private lateinit var rv: RecyclerView
+    private lateinit var progressBar: ProgressBar
+    private lateinit var llm: LinearLayoutManager
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         return inflater.inflate(R.layout.main_fragment, container, false)
@@ -35,7 +39,7 @@ class MainFragment : Fragment(), ClickListener {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setHasOptionsMenu(true)
+        setHasOptionsMenu(true) // because action bar manipulation is needed
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -43,10 +47,56 @@ class MainFragment : Fragment(), ClickListener {
 
         viewModel = ViewModelProvider(this).get(MainViewModel::class.java)
 
-        val rv: RecyclerView = view.findViewById(R.id.rv)
-        val llm = LinearLayoutManager(activity)
+        rv = view.findViewById(R.id.rv)
+        llm = LinearLayoutManager(activity)
+
         rv.layoutManager = llm
+        adapter = Adapter(this)
+        rv.adapter = adapter
         rv.setHasFixedSize(true)
+
+        setScrollListener() // for paginated api calls when last item is visible on scroll stop
+
+        progressBar = view.findViewById(R.id.progress_circular)
+
+        // set up observers
+        observeUsername()
+        observerProgress()
+        observePulls()
+
+        val defaultUser = "defunkt" // this set so that user will have something to see on first launch
+        viewModel.getPulls(defaultUser) // this is the first load calls when there's no user entered
+        Snackbar.make(view, "Loading user $defaultUser's pull requests on app launch", Snackbar.LENGTH_LONG).show()
+    }
+
+    private fun observeUsername(){
+        viewModel.username.observe(this, {
+            Log.d(TAG, "username changed, clearing adapter data. new user is $it")
+            adapter.clear()
+        })
+    }
+
+    private fun observePulls() {
+        viewModel.pulls.observe(this, {
+            Log.d(TAG, "observed on pulls: $it")
+
+            adapter.setData(it)
+        })
+    }
+
+    private fun observerProgress() {
+        viewModel.progress.observe(this, {
+            Log.d(TAG, "observed on progress: $it")
+
+            progressBar.visibility = if (it.first) View.VISIBLE else View.GONE
+
+            if (it.second) {
+                Toast.makeText(activity, "Some error occurred", Toast.LENGTH_SHORT).show()
+            }
+        })
+    }
+
+    private fun setScrollListener(){
         rv.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
                 super.onScrollStateChanged(recyclerView, newState)
@@ -61,42 +111,11 @@ class MainFragment : Fragment(), ClickListener {
                         Log.d(TAG, "reached end of the line - load more")
                         viewModel.username.value?.let { viewModel.getPulls(it) }
                     } else {
-                        Log.i(TAG, "Can't or shouldn't load more")
+                        Log.i(TAG, "Can't or shouldn't call api to load more")
                     }
                 }
             }
         })
-
-        val adapter = Adapter(this)
-        rv.adapter = adapter
-
-        val progressBar: ProgressBar = view.findViewById(R.id.progress_circular)
-        viewModel.progress.observe(this, {
-            Log.d(TAG, "observed on progress: $it")
-
-            progressBar.visibility = if (it.first) View.VISIBLE else View.GONE
-
-            if (it.second) {
-                Toast.makeText(activity, "Some error occurred", Toast.LENGTH_SHORT).show()
-            }
-        })
-
-        viewModel.pulls.observe(this, {
-            Log.d(TAG, "observed on pulls: $it")
-
-            adapter.setData(it)
-        })
-
-        viewModel.username.observe(this, {
-            Log.d(TAG, "username changed, clearing adapter data. new user is $it")
-            adapter.clear()
-        })
-
-        val defaultUser = "defunkt"
-
-        viewModel.getPulls(defaultUser) // this is the first load calls when there's no user entered
-
-        Snackbar.make(view, "Loading user $defaultUser's pull requests on app launch", Snackbar.LENGTH_LONG).show()
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -108,6 +127,7 @@ class MainFragment : Fragment(), ClickListener {
         val searchManager: SearchManager = activity?.getSystemService(Context.SEARCH_SERVICE) as SearchManager
         searchView.setSearchableInfo(searchManager.getSearchableInfo(activity!!.componentName))
 
+        // when submit search is clicked call the api and hide softkeyboard
         searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean {
                 Log.i(TAG, "onQueryTextSubmit: $query")
@@ -134,6 +154,7 @@ class MainFragment : Fragment(), ClickListener {
         inputMethodManager.hideSoftInputFromWindow(activity?.currentFocus?.windowToken, 0)
     }
 
+    // callback from adapter to open web view activity
     override fun clicked(url: String, title: String) {
         val intent = Intent(activity, WebActivity::class.java)
         intent.putExtra(Utils.KEY_PR_URL, url)

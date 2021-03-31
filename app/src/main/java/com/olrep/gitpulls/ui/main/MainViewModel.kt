@@ -20,7 +20,7 @@ class MainViewModel : ViewModel() {
     var totalCount = 0
 
     fun getPulls(user: String) {
-        progress.value = Pair(first = true, second = false)
+        progress.value = Pair(first = true, second = false) // show progress bar whenever an api call is made - this is the start to error flag will be false
 
         val page = if (user != username.value) 1 else (currentPage + 1) // in case when a fresh user is being searched
 
@@ -30,39 +30,34 @@ class MainViewModel : ViewModel() {
         GithubRepository.getClosedPulls(user, page, object : OnResponse<Items> {
             override fun onSuccess(result: Items?) {
                 Log.d(TAG, "onSuccess: $result")
-                var success = true
+                var failure = true  // use this flag to show error if received data isn't proper
 
-                if (result != null && result.items.isNotEmpty()) {
+                // if there's no proper data or any incomplete result, treat it as error - otherwise there will be a laundry list of null checks
+                if (result != null && result.items.isNotEmpty() && !result.incomplete_results) {
                     Log.d(TAG, "Result is available, setting data")
 
                     if (user != username.value) {
                         Log.d(TAG, "Setting new username. old user name is ${username.value} ")
                         username.value = user   // this should trigger old value reset in the view
-                        currentPage = 1
+                        currentPage = 1 // user name changed just now so it has to be the first page
                     } else {
-                        currentPage++
+                        currentPage++   // same user name, increment page
                     }
 
-                    totalCount = result.total_count
+                    totalCount = result.total_count // update total count for a query in every call - query will not change unless username name changes
 
-                    success = false
-                    pulls.value = result.items
+                    failure = false
+                    pulls.value = result.items  // finally setting the newly received list of pull data received in this call
                 }
 
-                progress.value = Pair(first = false, second = success)
+                progress.value = Pair(first = false, second = failure)  // progress bar hidden and error flag based on value of success
             }
 
             override fun onError(error: Throwable) {
                 Log.d(TAG, "onError: $error")
-                progress.value = Pair(first = false, second = false)
+                progress.value = Pair(first = false, second = true) // hide progress and show error
             }
         })
-    }
-
-    // called when new user is being searched
-    fun reset() {
-        currentPage = 0
-        totalCount = 0
     }
 
     override fun onCleared() {
